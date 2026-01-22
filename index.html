@@ -3,395 +3,725 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Driving Test Oral Questions (Click to Reveal Answers)</title>
+  <title>Driving Test Oral Trainer</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.5; }
-    h1 { margin: 0 0 12px; }
-    .tip { color: #555; margin-bottom: 18px; }
-    details { border: 1px solid #ddd; border-radius: 10px; padding: 10px 12px; margin: 10px 0; }
-    summary { cursor: pointer; font-weight: 650; }
+    :root {
+      --border: #e2e2e2;
+      --bg: #ffffff;
+      --muted: #555;
+      --card: #fafafa;
+      --btn: #f6f6f6;
+      --btnHover: #ededed;
+      --accent: #111;
+      --pill: #f1f1f1;
+    }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 22px;
+      line-height: 1.55;
+      background: var(--bg);
+      color: #111;
+    }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    .sub { margin: 0 0 16px; color: var(--muted); }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: var(--card);
+      margin-bottom: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1 1 260px;
+      min-width: 220px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #fff;
+    }
+    input[type="text"]:focus { border-color: #bdbdbd; }
+
+    .btn {
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+    }
+    .btn:hover { background: var(--btnHover); }
+    .btn.primary {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+    .btn.primary:hover { opacity: 0.92; }
+    .btn.danger {
+      background: #fff5f5;
+      border-color: #ffd6d6;
+    }
+    .btn.danger:hover { background: #ffecec; }
+
+    .toggle {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .toggle label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+    }
+    .toggle input { transform: translateY(1px); }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--pill);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .hint { color: var(--muted); margin-top: 8px; font-size: 13px; }
+
+    #randomCard {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+      margin-top: 12px;
+      display: none;
+    }
+    #randomQ { font-weight: 800; margin: 0 0 8px; }
+    #randomA { margin: 0; display: none; }
+    #randomA ul { margin: 8px 0 0 18px; }
+    #randomMeta { color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      background: #fff;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    summary::-webkit-details-marker { display: none; }
+    .rightControls {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .mini {
+      padding: 6px 9px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .mini:hover { background: var(--btnHover); }
+
     ul { margin: 10px 0 0 18px; }
-    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 18px; }
-    button { padding: 8px 12px; border-radius: 10px; border: 1px solid #ccc; background: #fafafa; cursor: pointer; }
-    button:hover { background: #f2f2f2; }
+    .muted { color: var(--muted); font-weight: 600; font-size: 12px; }
+
+    .wrongTag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #fff2f2;
+      border: 1px solid #ffd1d1;
+      font-size: 12px;
+      font-weight: 800;
+      color: #b30000;
+    }
+
+    .footerSpace { height: 24px; }
   </style>
 </head>
+
 <body>
-  <h1>🚗 Driving Test Oral Questions</h1>
-  <div class="tip">Click a question to reveal the answer. Use the buttons to expand/collapse all.</div>
+  <h1>🚗 Driving Test Oral Trainer</h1>
+  <p class="sub">Search, filter, practise randomly, and mark wrong answers. All data stays on this device.</p>
 
-  <div class="controls">
-    <button onclick="setAll(true)">Expand all</button>
-    <button onclick="setAll(false)">Collapse all</button>
+  <div class="panel">
+    <input id="search" type="text" placeholder="Search questions (e.g., 'yellow line', 'headlights', 'junction')..." />
+
+    <div class="toggle">
+      <label><input id="onlyQuestions" type="checkbox" /> Only show questions (hide answers)</label>
+      <label><input id="wrongOnly" type="checkbox" /> Wrong answers only</label>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="expandAll">Expand all</button>
+      <button class="btn" id="collapseAll">Collapse all</button>
+      <button class="btn primary" id="randomPick">Random question</button>
+      <button class="btn" id="randomToggleAnswer" disabled>Show answer</button>
+      <button class="btn danger" id="clearWrong">Clear wrong list</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div id="randomCard">
+      <div id="randomQ"></div>
+      <div id="randomA"></div>
+      <div id="randomMeta"></div>
+      <div class="row" style="margin-top:10px;">
+        <button class="btn" id="markWrongFromRandom">Mark wrong</button>
+        <button class="btn" id="unmarkWrongFromRandom">Unmark wrong</button>
+      </div>
+    </div>
+
+    <div class="hint">
+      Tips: You can click a question to expand. Use “Mark wrong” to build a wrong-question set for review.
+    </div>
   </div>
 
-  <div id="qa">
-
-    <details>
-      <summary>1. When can you overtake on the left?</summary>
-      <ul>
-        <li>When the driver in front is turning right</li>
-        <li>When you intend turning left</li>
-        <li>When vehicles in the lane to your right are moving more slowly than you</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>2. At an uncontrolled junction with roads of equal importance, who do you give way to?</summary>
-      <ul>
-        <li>Traffic coming from your right</li>
-        <li>Traffic already turning</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>3. At a stop sign with no white line, where would you stop?</summary>
-      <ul><li>At the stop sign</li></ul>
-    </details>
-
-    <details>
-      <summary>4. What position would you take for a right-hand turn on a one-way street?</summary>
-      <ul><li>The extreme right-hand lane</li></ul>
-    </details>
-
-    <details>
-      <summary>5. How would you turn right on a major road?</summary>
-      <ul>
-        <li>Check mirrors and signal</li>
-        <li>Move into the right-hand lane when clear</li>
-        <li>Keep left of the centre line</li>
-        <li>Turn only when a safe gap appears</li>
-        <li>NEVER cut the corner</li>
-        <li>Always give way to pedestrians</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>6. How would you recognise a zebra crossing at night?</summary>
-      <ul><li>By the flashing yellow beacons</li></ul>
-    </details>
-
-    <details>
-      <summary>7. What does the island in the centre of a pedestrian crossing mean?</summary>
-      <ul><li>Each side of the island is a separate crossing</li></ul>
-    </details>
-
-    <details>
-      <summary>8. What restrictions apply to the use of the horn?</summary>
-      <ul>
-        <li>Must not be used between 11:30pm and 7:00am in a built-up area</li>
-        <li>Except in an emergency</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>9. When driving at night, when should you dip your headlights?</summary>
-      <ul>
-        <li>When meeting oncoming traffic</li>
-        <li>When following close behind another vehicle</li>
-        <li>On continuously lit roads</li>
-        <li>At the beginning and end of lighting-up hours</li>
-        <li>In fog or snow</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>10. What should you do if dazzled by the lights of an oncoming vehicle?</summary>
-      <ul><li>Slow down and stop if necessary</li></ul>
-    </details>
-
-    <details>
-      <summary>11. What is a clearway?</summary>
-      <ul><li>Stopping and parking are prohibited during the times shown (except by buses or taxis)</li></ul>
-    </details>
-
-    <details>
-      <summary>12. What does a broken yellow line indicate?</summary>
-      <ul><li>A broken yellow line marks the edge of the road</li></ul>
-    </details>
-
-    <details>
-      <summary>13. What does a single yellow line mean?</summary>
-      <ul><li>No parking at certain times</li></ul>
-    </details>
-
-    <details>
-      <summary>14. What is the legal parking distance from the kerb?</summary>
-      <ul><li>Half a metre</li></ul>
-    </details>
-
-    <details>
-      <summary>15. How close to a junction can you park?</summary>
-      <ul><li>5 metres</li></ul>
-    </details>
-
-    <details>
-      <summary>16. What is the legal parking distance from a pedestrian crossing?</summary>
-      <ul>
-        <li>15 metres before</li>
-        <li>5 metres after</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>17. Where should you NOT park?</summary>
-      <ul>
-        <li>Near a bend or the brow of a hill</li>
-        <li>Near a hump-backed bridge</li>
-        <li>Near a junction</li>
-        <li>At a bus stop</li>
-        <li>At an entrance</li>
-        <li>Where your vehicle would obstruct a sign</li>
-        <li>On the footpath</li>
-        <li>In a bus lane</li>
-        <li>Opposite another vehicle on a narrow road</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>18. What is a safe following distance?</summary>
-      <ul>
-        <li>1 metre per km/h</li>
-        <li>Always allow a two-second gap</li>
-        <li>Double this if the surface is wet</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>19. Where should you NOT overtake?</summary>
-      <ul>
-        <li>At a bend</li>
-        <li>At a junction</li>
-        <li>At the brow of a hill</li>
-        <li>At a hump-backed bridge</li>
-        <li>On a continuous white line</li>
-        <li>Anywhere your view of oncoming traffic is restricted</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>20. When may you use the outside lane on a dual carriageway?</summary>
-      <ul>
-        <li>When overtaking another vehicle</li>
-        <li>When you intend to turn right a short distance ahead</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>21. If you saw a red triangle on the side of the road, what would it indicate?</summary>
-      <ul><li>There is an obstruction on the road ahead</li></ul>
-    </details>
-
-    <details>
-      <summary>22. What is the sequence of the traffic lights?</summary>
-      <ul><li>Green → Amber → Red</li></ul>
-    </details>
-
-    <details>
-      <summary>23. What does the green traffic light mean?</summary>
-      <ul><li>Proceed with caution</li></ul>
-    </details>
-
-    <details>
-      <summary>24. What does the amber traffic light mean?</summary>
-      <ul><li>Stop unless it is unsafe to do so</li></ul>
-    </details>
-
-    <details>
-      <summary>25. What does the red traffic light mean?</summary>
-      <ul><li>Stop</li></ul>
-    </details>
-
-    <details>
-      <summary>26. At pedestrian lights, what does the flashing amber light mean?</summary>
-      <ul><li>Give way to pedestrians</li></ul>
-    </details>
-
-    <details>
-      <summary>27. At traffic lights, what light comes after amber?</summary>
-      <ul><li>Red</li></ul>
-    </details>
-
-    <details>
-      <summary>28. What do flashing red lights mean?</summary>
-      <ul><li>Stop – train approaching</li></ul>
-    </details>
-
-    <details>
-      <summary>29. At a junction where the traffic lights are not working, who has right of way?</summary>
-      <ul><li>Traffic coming from the right</li></ul>
-    </details>
-
-    <details>
-      <summary>30. Name three people in authority you must stop for.</summary>
-      <ul>
-        <li>A Garda</li>
-        <li>A School Warden</li>
-        <li>A person in charge of animals</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>31. If entering a one-way street from the no-entry end, what road markings would you expect to see?</summary>
-      <ul><li>A continuous white line with a broken white line behind it</li></ul>
-    </details>
-
-    <details>
-      <summary>32. What does a continuous white line in the centre of the road mean?</summary>
-      <ul><li>You must not cross the line</li></ul>
-    </details>
-
-    <details>
-      <summary>33. When may you cross a continuous white line?</summary>
-      <ul>
-        <li>To avoid an obstruction</li>
-        <li>When directed to do so</li>
-        <li>For access</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>34. What procedure should you follow if crossing a dual carriageway with a narrow central median?</summary>
-      <ul><li>If the median is too narrow for your vehicle, you must wait until you can complete the crossing</li></ul>
-    </details>
-
-    <details>
-      <summary>35. What are the main differences between a dual carriageway and a motorway?</summary>
-      <ul>
-        <li>You can only turn off a motorway on the left</li>
-        <li>There are no right turns on motorways</li>
-        <li>The speed limits on a motorway are higher</li>
-        <li>You are not allowed to pull in and stop on a motorway</li>
-        <li>There are no traffic lights on a motorway</li>
-        <li>There are no roundabouts on a motorway</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>36. What is the national speed limit (cars)?</summary>
-      <ul><li>100 km/h</li></ul>
-    </details>
-
-    <details>
-      <summary>37. What is the motorway speed limit?</summary>
-      <ul><li>120 km/h</li></ul>
-    </details>
-
-    <details>
-      <summary>38. What is the legal minimum tyre tread depth?</summary>
-      <ul><li>1.6 mm</li></ul>
-    </details>
-
-    <details>
-      <summary>39. What rules apply to a yellow box junction?</summary>
-      <ul>
-        <li>You cannot enter it unless your exit is clear</li>
-        <li>Exception: when turning right, provided you are not obstructing other traffic</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>40. If you see one continuous and one broken white line, which one do you obey?</summary>
-      <ul><li>The one closest to your side of the road</li></ul>
-    </details>
-
-    <details>
-      <summary>41. What do two sets of broken white lines in the centre of the road mean?</summary>
-      <ul><li>There will be one or two continuous white lines ahead</li></ul>
-    </details>
-
-    <details>
-      <summary>42. What does a broken white line in the centre of the road mean?</summary>
-      <ul><li>You may overtake if it is safe to do so</li></ul>
-    </details>
-
-    <details>
-      <summary>43. What do horizontal white lines in the centre of the road mean?</summary>
-      <ul>
-        <li>Treat them like a traffic island</li>
-        <li>Do not enter them</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>44. What do two continuous yellow lines at the side of the road mean?</summary>
-      <ul><li>No parking at any time</li></ul>
-    </details>
-
-    <details>
-      <summary>45. What does a single continuous yellow line at the side of the road mean?</summary>
-      <ul><li>No parking during certain hours</li></ul>
-    </details>
-
-    <details>
-      <summary>46. What do white zigzag lines mean?</summary>
-      <ul>
-        <li>No stopping</li>
-        <li>No parking</li>
-        <li>No overtaking</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>47. Where would you find white zigzag lines?</summary>
-      <ul><li>Approaching a pedestrian crossing</li></ul>
-    </details>
-
-    <details>
-      <summary>48. Who has the right of way at a crossroads, roundabout or an uncontrolled junction?</summary>
-      <ul>
-        <li>Traffic coming from your right</li>
-        <li>Traffic already on the junction or roundabout</li>
-        <li>Pedestrians</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>49. What should you do if you had an accident?</summary>
-      <ul><li>Stop</li></ul>
-    </details>
-
-    <details>
-      <summary>50. Where would you never do a U-turn?</summary>
-      <ul>
-        <li>On a one-way street</li>
-        <li>Where there are continuous white lines</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>51. What do you check before starting the engine?</summary>
-      <ul>
-        <li>The handbrake is on</li>
-        <li>The gearstick is in the neutral position</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>52. When asked to check your tyres, what would you be checking for?</summary>
-      <ul>
-        <li>Tread depth above the minimum 1.6 mm</li>
-        <li>No damage to the tyre sidewalls</li>
-        <li>Enough air in the tyres</li>
-        <li>No foreign objects stuck in the tyre</li>
-      </ul>
-    </details>
-
-    <details>
-      <summary>53. How do you check if your brake lights are working if you are on your own?</summary>
-      <ul>
-        <li>Reverse up to a reflective surface</li>
-        <li>Press the brake pedal</li>
-        <li>Look out the rear window</li>
-      </ul>
-    </details>
-
-  </div>
+  <div id="list"></div>
+  <div class="footerSpace"></div>
 
   <script>
-    function setAll(open) {
+    // ---------- Data ----------
+    const QA = [
+      { id: 1, q: "When can you overtake on the left?", a: [
+        "When the driver in front is turning right",
+        "When you intend turning left",
+        "When vehicles in the lane to your right are moving more slowly than you"
+      ]},
+      { id: 2, q: "At an uncontrolled junction with roads of equal importance, who do you give way to?", a: [
+        "Traffic coming from your right",
+        "Traffic already turning"
+      ]},
+      { id: 3, q: "At a stop sign with no white line, where would you stop?", a: [
+        "At the stop sign"
+      ]},
+      { id: 4, q: "What position would you take for a right-hand turn on a one-way street?", a: [
+        "The extreme right-hand lane"
+      ]},
+      { id: 5, q: "How would you turn right on a major road?", a: [
+        "Check mirrors and signal",
+        "Move into the right-hand lane when clear",
+        "Keep left of the centre line",
+        "Turn only when a safe gap appears",
+        "NEVER cut the corner",
+        "Always give way to pedestrians"
+      ]},
+      { id: 6, q: "How would you recognise a zebra crossing at night?", a: [
+        "By the flashing yellow beacons"
+      ]},
+      { id: 7, q: "What does the island in the centre of a pedestrian crossing mean?", a: [
+        "Each side of the island is a separate crossing"
+      ]},
+      { id: 8, q: "What restrictions apply to the use of the horn?", a: [
+        "Must not be used between 11:30pm and 7:00am in a built-up area",
+        "Except in an emergency"
+      ]},
+      { id: 9, q: "When driving at night, when should you dip your headlights?", a: [
+        "When meeting oncoming traffic",
+        "When following close behind another vehicle",
+        "On continuously lit roads",
+        "At the beginning and end of lighting-up hours",
+        "In fog or snow"
+      ]},
+      { id: 10, q: "What should you do if dazzled by the lights of an oncoming vehicle?", a: [
+        "Slow down and stop if necessary"
+      ]},
+      { id: 11, q: "What is a clearway?", a: [
+        "Stopping and parking are prohibited during the times shown (except by buses or taxis)"
+      ]},
+      { id: 12, q: "What does a broken yellow line indicate?", a: [
+        "A broken yellow line marks the edge of the road"
+      ]},
+      { id: 13, q: "What does a single yellow line mean?", a: [
+        "No parking at certain times"
+      ]},
+      { id: 14, q: "What is the legal parking distance from the kerb?", a: [
+        "Half a metre"
+      ]},
+      { id: 15, q: "How close to a junction can you park?", a: [
+        "5 metres"
+      ]},
+      { id: 16, q: "What is the legal parking distance from a pedestrian crossing?", a: [
+        "15 metres before",
+        "5 metres after"
+      ]},
+      { id: 17, q: "Where should you NOT park?", a: [
+        "Near a bend or the brow of a hill",
+        "Near a hump-backed bridge",
+        "Near a junction",
+        "At a bus stop",
+        "At an entrance",
+        "Where your vehicle would obstruct a sign",
+        "On the footpath",
+        "In a bus lane",
+        "Opposite another vehicle on a narrow road"
+      ]},
+      { id: 18, q: "What is a safe following distance?", a: [
+        "1 metre per km/h",
+        "Always allow a two-second gap",
+        "Double this if the surface is wet"
+      ]},
+      { id: 19, q: "Where should you NOT overtake?", a: [
+        "At a bend",
+        "At a junction",
+        "At the brow of a hill",
+        "At a hump-backed bridge",
+        "On a continuous white line",
+        "Anywhere your view of oncoming traffic is restricted"
+      ]},
+      { id: 20, q: "When may you use the outside lane on a dual carriageway?", a: [
+        "When overtaking another vehicle",
+        "When you intend to turn right a short distance ahead"
+      ]},
+      { id: 21, q: "If you see a red triangle on the side of the road, what does it indicate?", a: [
+        "There is an obstruction on the road ahead"
+      ]},
+      { id: 22, q: "What is the sequence of the traffic lights?", a: [
+        "Green → Amber → Red"
+      ]},
+      { id: 23, q: "What does the green traffic light mean?", a: [
+        "Proceed with caution"
+      ]},
+      { id: 24, q: "What does the amber traffic light mean?", a: [
+        "Stop unless it is unsafe to do so"
+      ]},
+      { id: 25, q: "What does the red traffic light mean?", a: [
+        "Stop"
+      ]},
+      { id: 26, q: "At pedestrian lights, what does the flashing amber light mean?", a: [
+        "Give way to pedestrians"
+      ]},
+      { id: 27, q: "At traffic lights, what light comes after amber?", a: [
+        "Red"
+      ]},
+      { id: 28, q: "What do flashing red lights mean?", a: [
+        "Stop – train approaching"
+      ]},
+      { id: 29, q: "At a junction where the traffic lights are not working, who has right of way?", a: [
+        "Traffic coming from the right"
+      ]},
+      { id: 30, q: "Name three people in authority you must stop for.", a: [
+        "A Garda",
+        "A School Warden",
+        "A person in charge of animals"
+      ]},
+      { id: 31, q: "If entering a one-way street from the no-entry end, what road markings would you expect to see?", a: [
+        "A continuous white line with a broken white line behind it"
+      ]},
+      { id: 32, q: "What does a continuous white line in the centre of the road mean?", a: [
+        "You must not cross the line"
+      ]},
+      { id: 33, q: "When may you cross a continuous white line?", a: [
+        "To avoid an obstruction",
+        "When directed to do so",
+        "For access"
+      ]},
+      { id: 34, q: "What procedure should you follow if crossing a dual carriageway with a narrow central median?", a: [
+        "If the median is too narrow for your vehicle, you must wait until you can complete the crossing"
+      ]},
+      { id: 35, q: "What are the main differences between a dual carriageway and a motorway?", a: [
+        "You can only turn off a motorway on the left",
+        "There are no right turns on motorways",
+        "The speed limits on a motorway are higher",
+        "You are not allowed to pull in and stop on a motorway",
+        "There are no traffic lights on a motorway",
+        "There are no roundabouts on a motorway"
+      ]},
+      { id: 36, q: "What is the national speed limit (cars)?", a: [
+        "100 km/h"
+      ]},
+      { id: 37, q: "What is the motorway speed limit?", a: [
+        "120 km/h"
+      ]},
+      { id: 38, q: "What is the legal minimum tyre tread depth?", a: [
+        "1.6 mm"
+      ]},
+      { id: 39, q: "What rules apply to a yellow box junction?", a: [
+        "You cannot enter it unless your exit is clear",
+        "Exception: when turning right, provided you are not obstructing other traffic"
+      ]},
+      { id: 40, q: "If there is one continuous line and one broken line, which one do you obey?", a: [
+        "The one closest to your side of the road"
+      ]},
+      { id: 41, q: "What do two sets of broken white lines in the centre of the road mean?", a: [
+        "There will be one or two continuous white lines ahead"
+      ]},
+      { id: 42, q: "What does a broken white line in the centre of the road mean?", a: [
+        "You may overtake if it is safe to do so"
+      ]},
+      { id: 43, q: "What do horizontal white lines in the centre of the road mean?", a: [
+        "Treat them like you would a traffic island",
+        "Do not enter them"
+      ]},
+      { id: 44, q: "What do two continuous yellow lines at the side of the road mean?", a: [
+        "No parking at any time"
+      ]},
+      { id: 45, q: "What does a single continuous yellow line at the side of the road mean?", a: [
+        "No parking during certain hours"
+      ]},
+      { id: 46, q: "What do white zigzag lines mean?", a: [
+        "No stopping",
+        "No parking",
+        "No overtaking"
+      ]},
+      { id: 47, q: "Where would you find white zigzag lines?", a: [
+        "Approaching a pedestrian crossing"
+      ]},
+      { id: 48, q: "Who has the right of way at a crossroads, roundabout or an uncontrolled junction?", a: [
+        "Traffic coming from your right",
+        "Traffic already on the junction or roundabout",
+        "Pedestrians"
+      ]},
+      { id: 49, q: "What should you do if you had an accident?", a: [
+        "Stop"
+      ]},
+      { id: 50, q: "Where would you never do a U-turn?", a: [
+        "On a one-way street",
+        "Where there are continuous white lines"
+      ]},
+      { id: 51, q: "What do you check before starting the engine?", a: [
+        "The handbrake is on",
+        "The gearstick is in the neutral position"
+      ]},
+      { id: 52, q: "When asked to check your tyres, what would you be checking for?", a: [
+        "Tread depth above the minimum 1.6 mm",
+        "No damage to the tyre sidewalls",
+        "Enough air in the tyres",
+        "No foreign objects stuck in the tyre"
+      ]},
+      { id: 53, q: "How do you check if your brake lights are working if you are on your own?", a: [
+        "Reverse up to a reflective surface",
+        "Press the brake pedal",
+        "Look out the rear window"
+      ]}
+    ];
+
+    // ---------- Wrong list persistence ----------
+    const WRONG_KEY = "driving_oral_wrong_ids_v1";
+    function loadWrongSet() {
+      try {
+        const raw = localStorage.getItem(WRONG_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return new Set(arr);
+      } catch {
+        return new Set();
+      }
+    }
+    function saveWrongSet(set) {
+      localStorage.setItem(WRONG_KEY, JSON.stringify([...set].sort((a,b)=>a-b)));
+    }
+    let wrongSet = loadWrongSet();
+
+    // ---------- State ----------
+    const state = {
+      query: "",
+      onlyQuestions: false,
+      wrongOnly: false,
+      lastRandomId: null,
+      randomAnswerShown: false
+    };
+
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+
+    function matches(item, q) {
+      if (!q) return true;
+      const s = (item.q + " " + item.a.join(" ")).toLowerCase();
+      return s.includes(q.toLowerCase());
+    }
+
+    function filteredList() {
+      return QA.filter(item => {
+        if (state.wrongOnly && !wrongSet.has(item.id)) return false;
+        if (!matches(item, state.query)) return false;
+        return true;
+      });
+    }
+
+    function setAllDetails(open) {
       document.querySelectorAll("details").forEach(d => d.open = open);
     }
+
+    function updateStats(list) {
+      const total = QA.length;
+      const showing = list.length;
+      const wrong = wrongSet.size;
+
+      $("stats").innerHTML = `
+        <span class="pill">Total: <b>${total}</b></span>
+        <span class="pill">Showing: <b>${showing}</b></span>
+        <span class="pill">Wrong: <b>${wrong}</b></span>
+      `;
+    }
+
+    function renderList() {
+      const list = filteredList();
+      updateStats(list);
+
+      const container = $("list");
+      container.innerHTML = "";
+
+      list.forEach(item => {
+        const isWrong = wrongSet.has(item.id);
+
+        const details = document.createElement("details");
+        details.dataset.id = item.id;
+
+        const summary = document.createElement("summary");
+
+        const left = document.createElement("span");
+        left.textContent = `${item.id}. ${item.q}`;
+
+        const right = document.createElement("span");
+        right.className = "rightControls";
+
+        const wrongTag = document.createElement("span");
+        wrongTag.className = "wrongTag";
+        wrongTag.style.display = isWrong ? "inline-flex" : "none";
+        wrongTag.textContent = "WRONG";
+
+        const btnWrong = document.createElement("button");
+        btnWrong.className = "mini";
+        btnWrong.type = "button";
+        btnWrong.textContent = isWrong ? "Unmark wrong" : "Mark wrong";
+        btnWrong.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleWrong(item.id);
+        });
+
+        right.appendChild(wrongTag);
+        right.appendChild(btnWrong);
+
+        summary.appendChild(left);
+        summary.appendChild(right);
+
+        details.appendChild(summary);
+
+        const ansWrap = document.createElement("div");
+        ansWrap.className = "ansWrap";
+
+        const ul = document.createElement("ul");
+        item.a.forEach(line => {
+          const li = document.createElement("li");
+          li.textContent = line;
+          ul.appendChild(li);
+        });
+        ansWrap.appendChild(ul);
+
+        details.appendChild(ansWrap);
+
+        // Only show questions mode
+        if (state.onlyQuestions) {
+          details.open = false;
+          ansWrap.style.display = "none";
+        }
+
+        container.appendChild(details);
+      });
+    }
+
+    function toggleWrong(id) {
+      if (wrongSet.has(id)) wrongSet.delete(id);
+      else wrongSet.add(id);
+      saveWrongSet(wrongSet);
+
+      // keep random card buttons consistent
+      if (state.lastRandomId === id) renderRandomCard(id);
+
+      renderList();
+    }
+
+    function clearWrong() {
+      wrongSet = new Set();
+      saveWrongSet(wrongSet);
+      renderRandomCard(state.lastRandomId);
+      renderList();
+    }
+
+    // ---------- Random picker ----------
+    function pickRandom() {
+      const list = filteredList();
+      if (list.length === 0) {
+        $("randomCard").style.display = "block";
+        $("randomQ").textContent = "No questions match your current filters.";
+        $("randomA").style.display = "none";
+        $("randomA").innerHTML = "";
+        $("randomMeta").textContent = "";
+        $("randomToggleAnswer").disabled = true;
+        $("markWrongFromRandom").disabled = true;
+        $("unmarkWrongFromRandom").disabled = true;
+        return;
+      }
+      const item = list[Math.floor(Math.random() * list.length)];
+      state.lastRandomId = item.id;
+      state.randomAnswerShown = false;
+      renderRandomCard(item.id);
+    }
+
+    function renderRandomCard(id) {
+      const item = QA.find(x => x.id === id);
+      $("randomCard").style.display = "block";
+
+      if (!item) {
+        $("randomQ").textContent = "Pick a random question to start.";
+        $("randomA").style.display = "none";
+        $("randomA").innerHTML = "";
+        $("randomMeta").textContent = "";
+        $("randomToggleAnswer").disabled = true;
+        $("markWrongFromRandom").disabled = true;
+        $("unmarkWrongFromRandom").disabled = true;
+        return;
+      }
+
+      $("randomQ").textContent = `${item.id}. ${item.q}`;
+
+      const isWrong = wrongSet.has(item.id);
+      $("randomMeta").textContent = isWrong ? "Status: marked WRONG" : "Status: not marked wrong";
+
+      const ansDiv = $("randomA");
+      ansDiv.innerHTML = "";
+      const ul = document.createElement("ul");
+      item.a.forEach(line => {
+        const li = document.createElement("li");
+        li.textContent = line;
+        ul.appendChild(li);
+      });
+      ansDiv.appendChild(ul);
+
+      // toggle answer visibility
+      if (state.onlyQuestions) {
+        state.randomAnswerShown = false;
+        ansDiv.style.display = "none";
+        $("randomToggleAnswer").textContent = "Show answer";
+        $("randomToggleAnswer").disabled = true; // in only-questions mode, keep it hidden
+      } else {
+        $("randomToggleAnswer").disabled = false;
+        ansDiv.style.display = state.randomAnswerShown ? "block" : "none";
+        $("randomToggleAnswer").textContent = state.randomAnswerShown ? "Hide answer" : "Show answer";
+      }
+
+      $("markWrongFromRandom").disabled = false;
+      $("unmarkWrongFromRandom").disabled = false;
+    }
+
+    function toggleRandomAnswer() {
+      if (state.lastRandomId == null) return;
+      state.randomAnswerShown = !state.randomAnswerShown;
+      renderRandomCard(state.lastRandomId);
+    }
+
+    // ---------- Wiring ----------
+    $("search").addEventListener("input", (e) => {
+      state.query = e.target.value.trim();
+      renderList();
+    });
+
+    $("onlyQuestions").addEventListener("change", (e) => {
+      state.onlyQuestions = e.target.checked;
+
+      // When only-questions is on, hide random answer + disable show answer
+      if (state.onlyQuestions) {
+        state.randomAnswerShown = false;
+      }
+
+      renderList();
+      renderRandomCard(state.lastRandomId);
+    });
+
+    $("wrongOnly").addEventListener("change", (e) => {
+      state.wrongOnly = e.target.checked;
+      renderList();
+    });
+
+    $("expandAll").addEventListener("click", () => {
+      if (state.onlyQuestions) return; // no answers visible anyway
+      setAllDetails(true);
+    });
+
+    $("collapseAll").addEventListener("click", () => {
+      setAllDetails(false);
+    });
+
+    $("randomPick").addEventListener("click", () => {
+      pickRandom();
+      $("randomToggleAnswer").disabled = state.onlyQuestions;
+    });
+
+    $("randomToggleAnswer").addEventListener("click", () => {
+      toggleRandomAnswer();
+    });
+
+    $("clearWrong").addEventListener("click", () => {
+      clearWrong();
+    });
+
+    $("markWrongFromRandom").addEventListener("click", () => {
+      if (state.lastRandomId == null) return;
+      if (!wrongSet.has(state.lastRandomId)) {
+        wrongSet.add(state.lastRandomId);
+        saveWrongSet(wrongSet);
+        renderRandomCard(state.lastRandomId);
+        renderList();
+      }
+    });
+
+    $("unmarkWrongFromRandom").addEventListener("click", () => {
+      if (state.lastRandomId == null) return;
+      if (wrongSet.has(state.lastRandomId)) {
+        wrongSet.delete(state.lastRandomId);
+        saveWrongSet(wrongSet);
+        renderRandomCard(state.lastRandomId);
+        renderList();
+      }
+    });
+
+    // Initial render
+    renderList();
+    renderRandomCard(null);
+    updateStats(filteredList());
   </script>
 </body>
 </html>
