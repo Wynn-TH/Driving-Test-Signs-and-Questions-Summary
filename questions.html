@@ -59,9 +59,9 @@ header { text-align: center; padding: 20px; }
         </header>
         <nav class="nav">
             <a class="nav-link" href="index.html">🚦 路标图片</a>
-            <a class="nav-link active" href="questions.html">📝 口试题库</a>
+            <a class="nav-link active" href="questions.html">📝 问答题库</a>
         </nav>
-<div class="section-title" id="qa">📝 口试题库</div>
+<div class="section-title" id="qa">📝 问答题库</div>
         <p class="section-sub">支持搜索、随机抽题、错题复习（数据仅保存在本地）。</p>
         <div class="panel">
             <input id="qaSearch" class="qa-input" type="text" placeholder="搜索题目关键词，例如：yellow line / junction / headlights..." />
@@ -367,13 +367,40 @@ header { text-align: center; padding: 20px; }
         function renderQA() {
             const filtered = getFilteredQA();
             qaList.innerHTML = '';
+            qaStats.innerHTML = '';
+
+            const stats = [
+                `共 ${QA.length} 题`,
+                `当前 ${filtered.length} 题`,
+                `错题 ${qaState.wrongIds.size} 题`
+            ];
+
+            stats.forEach(text => {
+                const pill = document.createElement('div');
+                pill.className = 'pill';
+                pill.textContent = text;
+                qaStats.appendChild(pill);
+            });
+
+            if (filtered.length === 0) {
+                const empty = document.createElement('div');
+                empty.style.fontSize = '12px';
+                empty.style.opacity = '0.6';
+                empty.style.textAlign = 'center';
+                empty.style.marginTop = '12px';
+                empty.textContent = '没有匹配的题目。';
+                qaList.appendChild(empty);
+                return;
+            }
 
             filtered.forEach(item => {
                 const details = document.createElement('details');
                 details.className = 'qa-card';
 
                 const summary = document.createElement('summary');
-                summary.textContent = item.q;
+
+                const questionText = document.createElement('span');
+                questionText.textContent = item.q;
 
                 const rightControls = document.createElement('span');
                 rightControls.style.display = 'inline-flex';
@@ -400,6 +427,100 @@ header { text-align: center; padding: 20px; }
                     }
                     saveWrongIds();
                     renderQA();
+                });
+
+                rightControls.appendChild(toggleBtn);
+                summary.appendChild(questionText);
+                summary.appendChild(rightControls);
+
+                const answerList = document.createElement('ul');
+                item.a.forEach(answer => {
+                    const li = document.createElement('li');
+                    li.textContent = answer;
+                    answerList.appendChild(li);
+                });
+
+                if (qaOnlyQuestions.checked) {
+                    answerList.style.display = 'none';
+                }
+
+                details.appendChild(summary);
+                details.appendChild(answerList);
+                qaList.appendChild(details);
+            });
+        }
+
+        function renderRandom(item) {
+            if (!item) {
+                randomCard.style.display = 'none';
+                qaRandomToggleAnswer.disabled = true;
+                return;
+            }
+
+            qaState.currentRandom = item;
+            randomQ.textContent = item.q;
+            randomA.innerHTML = `<ul>${item.a.map(answer => `<li>${answer}</li>`).join('')}</ul>`;
+            randomA.style.display = 'none';
+            randomMeta.textContent = `题号 #${item.id}`;
+            qaRandomToggleAnswer.textContent = '显示答案';
+            qaRandomToggleAnswer.disabled = false;
+            randomCard.style.display = 'block';
+        }
+
+        function pickRandomQA() {
+            const pool = getFilteredQA();
+            if (!pool.length) {
+                renderRandom(null);
+                return;
+            }
+            const item = pool[Math.floor(Math.random() * pool.length)];
+            renderRandom(item);
+        }
+
+        qaSearch.addEventListener('input', renderQA);
+        qaOnlyQuestions.addEventListener('change', renderQA);
+        qaWrongOnly.addEventListener('change', renderQA);
+
+        qaExpandAll.addEventListener('click', () => {
+            document.querySelectorAll('#qaList details').forEach(details => {
+                details.open = true;
+            });
+        });
+
+        qaCollapseAll.addEventListener('click', () => {
+            document.querySelectorAll('#qaList details').forEach(details => {
+                details.open = false;
+            });
+        });
+
+        qaRandomPick.addEventListener('click', pickRandomQA);
+        qaRandomToggleAnswer.addEventListener('click', () => {
+            const isHidden = randomA.style.display === 'none';
+            randomA.style.display = isHidden ? 'block' : 'none';
+            qaRandomToggleAnswer.textContent = isHidden ? '隐藏答案' : '显示答案';
+        });
+
+        qaClearWrong.addEventListener('click', () => {
+            qaState.wrongIds.clear();
+            saveWrongIds();
+            renderQA();
+        });
+
+        markWrongFromRandom.addEventListener('click', () => {
+            if (!qaState.currentRandom) return;
+            qaState.wrongIds.add(qaState.currentRandom.id);
+            saveWrongIds();
+            renderQA();
+        });
+
+        unmarkWrongFromRandom.addEventListener('click', () => {
+            if (!qaState.currentRandom) return;
+            qaState.wrongIds.delete(qaState.currentRandom.id);
+            saveWrongIds();
+            renderQA();
+        });
+
+        renderQA();
 
         const toggleTheme = document.getElementById('toggleTheme');
         toggleTheme.addEventListener('click', () => {
