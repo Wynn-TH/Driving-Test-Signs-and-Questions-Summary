@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>爱尔兰驾照路标神器</title>
+    <style>
+:root { --primary: #1cb0f6; --bg: #f7f8fa; --card-bg: #ffffff; --text: #3c3c3c; --border: #e5e5e5; }
+[data-theme="dark"] { --bg: #131f24; --card-bg: #1e2c33; --text: #eeeeee; --border: #37464f; }
+body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+.container { max-width: 800px; margin: auto; }
+header { text-align: center; padding: 20px; }
+.nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; }
+.nav-link { text-decoration: none; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); color: var(--text); font-size: 12px; }
+.nav-link.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.toolbar { position: sticky; top: 0; background: var(--bg); padding: 10px; display: flex; gap: 8px; z-index: 10; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+#searchInput { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.card { background: var(--card-bg); padding: 10px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
+.img-container { height: 140px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; padding: 6px; }
+.sign-img { max-height: 100%; max-width: 100%; }
+.en-text { font-size: 0.9rem; font-weight: bold; }
+.ipa-text { color: #888; font-size: 0.75rem; margin: 4px 0; }
+.zh-text { font-size: 0.85rem; color: #1cb0f6; font-weight: 500; border-top: 1px dashed #eee; padding-top: 5px; }
+.audio-btn { background: #1cb0f6; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; }
+.hide-zh .zh-text { display: none; }
+.card-num { position: absolute; top: 5px; right: 8px; font-size: 9px; opacity: 0.3; }
+.btn { padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 12px; }
+.toggle-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card-bg); cursor: pointer; font-size: 12px; }
+.section-title { margin: 24px 0 8px; font-size: 18px; text-align: center; }
+.section-sub { text-align: center; font-size: 12px; opacity: 0.7; margin-top: 4px; }
+.panel { border: 1px solid var(--border); border-radius: 14px; padding: 12px; background: var(--card-bg); margin: 12px 0 16px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.qa-input { flex: 1 1 260px; min-width: 220px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: #fff; }
+.qa-input:focus { outline: none; border-color: #bdbdbd; }
+.toggle { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.toggle label { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card-bg); cursor: pointer; font-size: 12px; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; opacity: 0.7; }
+.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px; }
+.qa-card { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin: 10px 0; background: #fff; }
+.qa-card summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.qa-card summary::-webkit-details-marker { display: none; }
+.qa-mini { padding: 4px 8px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); cursor: pointer; font-size: 11px; }
+.qa-mini:hover { opacity: 0.85; }
+.wrongTag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; background: #fff2f2; border: 1px solid #ffd1d1; font-size: 11px; font-weight: 700; color: #b30000; }
+#randomCard { border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; background: #fff; margin-top: 12px; display: none; }
+#randomQ { font-weight: 700; margin: 0 0 8px; }
+#randomA { margin: 0; display: none; }
+#randomA ul { margin: 8px 0 0 18px; }
+#randomMeta { font-size: 12px; opacity: 0.7; margin-top: 8px; }
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h3>🇮🇪 爱尔兰路标词典</h3>
+            <p style="font-size: 12px; opacity: 0.6; margin-top: 5px;">路考必备 · 双语点读 ·</p>
+        </header>
+        <nav class="nav">
+            <a class="nav-link" href="index.html">🚦 路标图片</a>
+            <a class="nav-link active" href="questions.html">📝 口试题库</a>
+        </nav>
+<div class="section-title" id="qa">📝 口试题库</div>
+        <p class="section-sub">支持搜索、随机抽题、错题复习（数据仅保存在本地）。</p>
+        <div class="panel">
+            <input id="qaSearch" class="qa-input" type="text" placeholder="搜索题目关键词，例如：yellow line / junction / headlights..." />
+            <div class="toggle">
+                <label><input id="qaOnlyQuestions" type="checkbox" /> 仅显示题目（隐藏答案）</label>
+                <label><input id="qaWrongOnly" type="checkbox" /> 只看错题</label>
+            </div>
+            <div class="row">
+                <button class="btn" id="qaExpandAll">展开全部</button>
+                <button class="btn" id="qaCollapseAll">收起全部</button>
+                <button class="btn" id="qaRandomPick">随机抽题</button>
+                <button class="btn" id="qaRandomToggleAnswer" disabled>显示答案</button>
+                <button class="btn" id="qaClearWrong">清空错题</button>
+            </div>
+            <div class="stats" id="qaStats"></div>
+            <div id="randomCard">
+                <div id="randomQ"></div>
+                <div id="randomA"></div>
+                <div id="randomMeta"></div>
+                <div class="row" style="margin-top:10px;">
+                    <button class="btn" id="markWrongFromRandom">标记错题</button>
+                    <button class="btn" id="unmarkWrongFromRandom">取消错题</button>
+                </div>
+            </div>
+            <div style="font-size: 12px; opacity: 0.7; margin-top: 8px;">
+                提示：点击题目可展开答案；“标记错题”会在本地保存，方便复习。
+            </div>
+        </div>
+        <div id="qaList"></div>
+        <div class="row" style="margin-top: 10px;">
+            <button class="btn" id="toggleTheme">🌙</button>
+        </div>
+    </div>
+    <script>
+        const QA = [
+            { id: 1, q: "When can you overtake on the left?", a: [
+                "When the driver in front is turning right",
+                "When you intend turning left",
+                "When vehicles in the lane to your right are moving more slowly than you"
+            ]},
+            { id: 2, q: "At an uncontrolled junction with roads of equal importance, who do you give way to?", a: [
+                "Traffic coming from your right",
+                "Traffic already turning"
+            ]},
+            { id: 3, q: "At a stop sign with no white line, where would you stop?", a: [
+                "At the stop sign"
+            ]},
+            { id: 4, q: "What position would you take for a right-hand turn on a one-way street?", a: [
+                "The extreme right-hand lane"
+            ]},
+            { id: 5, q: "How would you turn right on a major road?", a: [
+                "Check mirrors and signal",
+                "Move into the right-hand lane when clear",
+                "Keep left of the centre line",
+                "Turn only when a safe gap appears",
+                "NEVER cut the corner",
+                "Always give way to pedestrians"
+            ]},
+            { id: 6, q: "How would you recognise a zebra crossing at night?", a: [
+                "By the flashing yellow beacons"
+            ]},
+            { id: 7, q: "What does the island in the centre of a pedestrian crossing mean?", a: [
+                "Each side of the island is a separate crossing"
+            ]},
+            { id: 8, q: "What restrictions apply to the use of the horn?", a: [
+                "Must not be used between 11:30pm and 7:00am in a built-up area",
+                "Except in an emergency"
+            ]},
+            { id: 9, q: "When driving at night, when should you dip your headlights?", a: [
+                "When meeting oncoming traffic",
+                "When following close behind another vehicle",
+                "On continuously lit roads",
+                "At the beginning and end of lighting-up hours",
+                "In fog or snow"
+            ]},
+            { id: 10, q: "What should you do if dazzled by the lights of an oncoming vehicle?", a: [
+                "Slow down and stop if necessary"
+            ]},
+            { id: 11, q: "What is a clearway?", a: [
+                "Stopping and parking are prohibited during the times shown (except by buses or taxis)"
+            ]},
+            { id: 12, q: "What does a broken yellow line indicate?", a: [
+                "A broken yellow line marks the edge of the road"
+            ]},
+            { id: 13, q: "What does a single yellow line mean?", a: [
+                "No parking at certain times"
+            ]},
+            { id: 14, q: "What is the legal parking distance from the kerb?", a: [
+                "Half a metre"
+            ]},
+            { id: 15, q: "How close to a junction can you park?", a: [
+                "5 metres"
+            ]},
+            { id: 16, q: "What is the legal parking distance from a pedestrian crossing?", a: [
+                "15 metres before",
+                "5 metres after"
+            ]},
+            { id: 17, q: "Where should you NOT park?", a: [
+                "Near a bend or the brow of a hill",
+                "Near a hump-backed bridge",
+                "Near a junction",
+                "At a bus stop",
+                "At an entrance",
+                "Where your vehicle would obstruct a sign",
+                "On the footpath",
+                "In a bus lane",
+                "Opposite another vehicle on a narrow road"
+            ]},
+            { id: 18, q: "What is a safe following distance?", a: [
+                "1 metre per km/h",
+                "Always allow a two-second gap",
+                "Double this if the surface is wet"
+            ]},
+            { id: 19, q: "Where should you NOT overtake?", a: [
+                "At a bend",
+                "At a junction",
+                "At the brow of a hill",
+                "At a hump-backed bridge",
+                "On a continuous white line",
+                "Anywhere your view of oncoming traffic is restricted"
+            ]},
+            { id: 20, q: "When may you use the outside lane on a dual carriageway?", a: [
+                "When overtaking another vehicle",
+                "When you intend to turn right a short distance ahead"
+            ]},
+            { id: 21, q: "If you see a red triangle on the side of the road, what does it indicate?", a: [
+                "There is an obstruction on the road ahead"
+            ]},
+            { id: 22, q: "What is the sequence of the traffic lights?", a: [
+                "Green → Amber → Red"
+            ]},
+            { id: 23, q: "What does the green traffic light mean?", a: [
+                "Proceed with caution"
+            ]},
+            { id: 24, q: "What does the amber traffic light mean?", a: [
+                "Stop unless it is unsafe to do so"
+            ]},
+            { id: 25, q: "What does the red traffic light mean?", a: [
+                "Stop"
+            ]},
+            { id: 26, q: "At pedestrian lights, what does the flashing amber light mean?", a: [
+                "Give way to pedestrians"
+            ]},
+            { id: 27, q: "At traffic lights, what light comes after amber?", a: [
+                "Red"
+            ]},
+            { id: 28, q: "What do flashing red lights mean?", a: [
+                "Stop – train approaching"
+            ]},
+            { id: 29, q: "At a junction where the traffic lights are not working, who has right of way?", a: [
+                "Traffic coming from the right"
+            ]},
+            { id: 30, q: "Name three people in authority you must stop for.", a: [
+                "A Garda",
+                "A School Warden",
+                "A person in charge of animals"
+            ]},
+            { id: 31, q: "If entering a one-way street from the no-entry end, what road markings would you expect to see?", a: [
+                "A continuous white line with a broken white line behind it"
+            ]},
+            { id: 32, q: "What does a continuous white line in the centre of the road mean?", a: [
+                "You must not cross the line"
+            ]},
+            { id: 33, q: "When may you cross a continuous white line?", a: [
+                "To avoid an obstruction",
+                "When directed to do so",
+                "For access"
+            ]},
+            { id: 34, q: "What procedure should you follow if crossing a dual carriageway with a narrow central median?", a: [
+                "If the median is too narrow for your vehicle, you must wait until you can complete the crossing"
+            ]},
+            { id: 35, q: "What are the main differences between a dual carriageway and a motorway?", a: [
+                "You can only turn off a motorway on the left",
+                "There are no right turns on motorways",
+                "The speed limits on a motorway are higher",
+                "You are not allowed to pull in and stop on a motorway",
+                "There are no traffic lights on a motorway",
+                "There are no roundabouts on a motorway"
+            ]},
+            { id: 36, q: "What is the national speed limit (cars)?", a: [
+                "100 km/h"
+            ]},
+            { id: 37, q: "What is the motorway speed limit?", a: [
+                "120 km/h"
+            ]},
+            { id: 38, q: "What is the legal minimum tyre tread depth?", a: [
+                "1.6 mm"
+            ]},
+            { id: 39, q: "What rules apply to a yellow box junction?", a: [
+                "You cannot enter it unless your exit is clear",
+                "Exception: when turning right, provided you are not obstructing other traffic"
+            ]},
+            { id: 40, q: "If there is one continuous line and one broken line, which one do you obey?", a: [
+                "The one closest to your side of the road"
+            ]},
+            { id: 41, q: "What do two sets of broken white lines in the centre of the road mean?", a: [
+                "There will be one or two continuous white lines ahead"
+            ]},
+            { id: 42, q: "What does a broken white line in the centre of the road mean?", a: [
+                "You may overtake if it is safe to do so"
+            ]},
+            { id: 43, q: "What do horizontal white lines in the centre of the road mean?", a: [
+                "Treat them like you would a traffic island",
+                "Do not enter them"
+            ]},
+            { id: 44, q: "What do two continuous yellow lines at the side of the road mean?", a: [
+                "No parking at any time"
+            ]},
+            { id: 45, q: "What do two continuous white lines in the centre of the road mean?", a: [
+                "You must not cross them"
+            ]},
+            { id: 46, q: "What does a single broken white line mean?", a: [
+                "You may overtake if it is safe to do so"
+            ]},
+            { id: 47, q: "What is the speed limit in a built-up area?", a: [
+                "50 km/h"
+            ]},
+            { id: 48, q: "What is the speed limit on a national primary road?", a: [
+                "100 km/h"
+            ]},
+            { id: 49, q: "What is the speed limit on a regional/local road?", a: [
+                "80 km/h"
+            ]},
+            { id: 50, q: "What is the speed limit in a housing estate?", a: [
+                "30 km/h"
+            ]},
+            { id: 51, q: "How close can you park to a pedestrian crossing?", a: [
+                "15 metres before",
+                "5 metres after"
+            ]},
+            { id: 52, q: "When must you use your indicators?", a: [
+                "When turning",
+                "When changing lanes",
+                "When pulling in or out",
+                "When overtaking"
+            ]},
+            { id: 53, q: "What should you do when approaching a roundabout?", a: [
+                "Check mirrors and signal as needed",
+                "Approach in the correct lane",
+                "Give way to traffic from the right",
+                "Do not stop on the roundabout"
+            ]},
+            { id: 54, q: "When may you use the hard shoulder on a motorway?", a: [
+                "Only in emergencies"
+            ]},
+            { id: 55, q: "What must you do at a yield sign?", a: [
+                "Slow down and be prepared to stop",
+                "Give way to traffic on the major road"
+            ]},
+            { id: 56, q: "What is aquaplaning?", a: [
+                "When tyres lose grip due to water on the road"
+            ]},
+            { id: 57, q: "How should you recover from a skid?", a: [
+                "Steer gently into the skid",
+                "Do not brake harshly"
+            ]},
+            { id: 58, q: "What is the legal alcohol limit for fully licensed drivers?", a: [
+                "50 milligrams per 100 millilitres of blood"
+            ]},
+            { id: 59, q: "What is the legal alcohol limit for learner or professional drivers?", a: [
+                "20 milligrams per 100 millilitres of blood"
+            ]},
+            { id: 60, q: "When must you wear a seatbelt?", a: [
+                "At all times when driving or traveling in a vehicle"
+            ]}
+        ];
+
+        const qaState = {
+            wrongIds: new Set(JSON.parse(localStorage.getItem('qaWrongIds') || '[]')),
+            currentRandom: null
+        };
+
+        const qaSearch = document.getElementById('qaSearch');
+        const qaOnlyQuestions = document.getElementById('qaOnlyQuestions');
+        const qaWrongOnly = document.getElementById('qaWrongOnly');
+        const qaStats = document.getElementById('qaStats');
+        const qaList = document.getElementById('qaList');
+        const qaExpandAll = document.getElementById('qaExpandAll');
+        const qaCollapseAll = document.getElementById('qaCollapseAll');
+        const qaRandomPick = document.getElementById('qaRandomPick');
+        const qaRandomToggleAnswer = document.getElementById('qaRandomToggleAnswer');
+        const qaClearWrong = document.getElementById('qaClearWrong');
+        const randomCard = document.getElementById('randomCard');
+        const randomQ = document.getElementById('randomQ');
+        const randomA = document.getElementById('randomA');
+        const randomMeta = document.getElementById('randomMeta');
+        const markWrongFromRandom = document.getElementById('markWrongFromRandom');
+        const unmarkWrongFromRandom = document.getElementById('unmarkWrongFromRandom');
+
+        function saveWrongIds() {
+            localStorage.setItem('qaWrongIds', JSON.stringify([...qaState.wrongIds]));
+        }
+
+        function getFilteredQA() {
+            const keyword = qaSearch.value.trim().toLowerCase();
+            return QA.filter(item => {
+                const matchKeyword = item.q.toLowerCase().includes(keyword) || item.a.join(' ').toLowerCase().includes(keyword);
+                const matchWrong = !qaWrongOnly.checked || qaState.wrongIds.has(item.id);
+                return matchKeyword && matchWrong;
+            });
+        }
+
+        function renderQA() {
+            const filtered = getFilteredQA();
+            qaList.innerHTML = '';
+
+            filtered.forEach(item => {
+                const details = document.createElement('details');
+                details.className = 'qa-card';
+
+                const summary = document.createElement('summary');
+                summary.textContent = item.q;
+
+                const rightControls = document.createElement('span');
+                rightControls.style.display = 'inline-flex';
+                rightControls.style.gap = '6px';
+                rightControls.style.alignItems = 'center';
+
+                if (qaState.wrongIds.has(item.id)) {
+                    const tag = document.createElement('span');
+                    tag.className = 'wrongTag';
+                    tag.textContent = '错题';
+                    rightControls.appendChild(tag);
+                }
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'qa-mini';
+                toggleBtn.type = 'button';
+                toggleBtn.textContent = qaState.wrongIds.has(item.id) ? '取消错题' : '标记错题';
+                toggleBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    if (qaState.wrongIds.has(item.id)) {
+                        qaState.wrongIds.delete(item.id);
+                    } else {
+                        qaState.wrongIds.add(item.id);
+                    }
+                    saveWrongIds();
+                    renderQA();
+
+        const toggleTheme = document.getElementById('toggleTheme');
+        toggleTheme.addEventListener('click', () => {
+            document.documentElement.setAttribute(
+                'data-theme',
+                document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+            );
+        });
+    </script>
+</body>
+</html>
